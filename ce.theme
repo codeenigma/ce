@@ -1,0 +1,125 @@
+<?php
+
+/**
+ * @file
+ * Theme functions and the like.
+ */
+
+use Drupal\image\Entity\ImageStyle;
+use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
+
+/**
+ * Implements hook_preprocess().
+ */
+function ce_preprocess(&$variables, $hook) {
+  $variables['images_directory'] = '/' . drupal_get_path('theme', 'ce') . '/assets/img';
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function ce_preprocess_html(&$variables) {
+  $variables['svg_source_path'] = '/' . drupal_get_path('theme', 'ce') . '/assets/img/svgs/symbol-defs.svg';
+
+  $variables['body_classes'] = [];
+  // FIXME: Is the below generic?
+//  $path = \Drupal::service('path.current')->getPath();
+//  if ($path == '/all-content') {
+//    $variables['body_classes'][] = 'search-page';
+//  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function ce_preprocess_page(&$variables) {
+  $variables['site_logo'] = theme_get_setting('logo.url');
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function ce_preprocess_page_title(&$variables) {
+  // FIXME: Is this really generic of every site?
+//  if ($node = \Drupal::routeMatch()->getParameter('node')) {
+//    if (isset($node->field_standfirst)) {
+//      $variables['standfirst'] = $node->get('field_standfirst')->view('full');
+//    }
+//
+//    if (isset($node->field_hero_image->entity)) {
+//      $variables['hero_image'] = $node->get('field_hero_image')->view('full');
+//    }
+//  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function ce_preprocess_node(&$variables) {
+  $node = $variables['node'];
+}
+
+
+/**
+ * Preprocess page nodes.
+ */
+function ce_preprocess_page_node(&$variables, $node) {
+
+}
+
+/**
+ * Implements hook_theme_suggestions_alter().
+ */
+function ce_theme_suggestions_alter(array &$suggestions, array $variables, $hook) {
+  add_views_display_theme_suggestions($suggestions, $variables, $hook);
+  add_breadcrumb_theme_suggestions($suggestions, $variables, $hook);
+}
+
+/**
+ * Add theme suggestions based on the display name.
+ */
+function add_views_display_theme_suggestions(array &$suggestions, array $variables, $hook) {
+  if ($hook !== 'views_view') {
+    return;
+  }
+
+  $view = $variables['view'];
+  $viewNameSuggestion = str_replace('_', '-', $view->storage->id());
+  $viewDisplaySuggestion = str_replace('_', '-', $view->getDisplay()->display['id']);
+
+  $suggestions[] = 'views-view--' . $viewNameSuggestion . '--' . $viewDisplaySuggestion;
+}
+
+/**
+ * Theme suggestions for breadcrumb rendering.
+ *
+ * @see ce_theme_suggestions_alter().
+ */
+function add_breadcrumb_theme_suggestions(array &$suggestions, array $variables, $hook) {
+  if ($hook != 'breadcrumb') {
+    return;
+  }
+
+  /* @var \Drupal\node\Entity\Node $node */
+  $node = \Drupal::requestStack()->getCurrentRequest()->get('node');
+  $original_theme_hook = $variables['theme_hook_original'];
+
+  // Per node-type breadcrumb.
+  if ($node) {
+    $suggestions[] = $original_theme_hook . '__' . $node->bundle();
+    return $suggestions;
+  }
+
+  // Panels integration to provide suggestions per panel page & variant.
+  $request_attr = \Drupal::requestStack()->getCurrentRequest()->attributes;
+  if ($request_attr->get('page_manager_page')) {
+    /* @var \Drupal\page_manager\Entity\Page $page */
+    $page = $request_attr->get('page_manager_page');
+    /* @var \Drupal\page_manager\Entity\PageVariant $variant */
+    $variant = $request_attr->get('page_manager_page_variant');
+    $suggestions[] = $original_theme_hook . '__' . 'page_manager_page';
+    $suggestions[] = $original_theme_hook . '__' . $page->id();
+    $suggestions[] = $original_theme_hook . '__' . $page->id() . '__' . $variant->id();
+  }
+}

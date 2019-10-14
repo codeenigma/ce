@@ -1,0 +1,25 @@
+ce_plain:
+  label: 'CE - Plain'
+  path: templates/layout/plain
+  template: layout--plain
+  category: 'CE'
+  default_region: content
+  icon_map:
+    - [content]
+  regions:
+    content:
+      label: Content
+ce_top_bottom:
+  label: 'CE - Top / Bottom'
+  path: templates/layout/top_bottom
+  template: layout--top-bottom
+  category: 'CE'
+  default_region: top
+  icon_map:
+    - [top]
+    - [bottom]
+  regions:
+    top:
+      label: Top
+    bottom:
+      label: Bottom

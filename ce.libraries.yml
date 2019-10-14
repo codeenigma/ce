@@ -1,0 +1,15 @@
+global-styling:
+  version: 1.x
+  css:
+    base:
+      assets/css/site.css:
+        preprocess: true
+        minified: true
+global-scripts:
+  version: 1.x
+  js:
+    assets/js/script.js:
+      preprocess: true
+  dependencies:
+    - core/jquery
+    - core/drupal

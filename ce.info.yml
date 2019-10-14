@@ -1,0 +1,29 @@
+name: CodeEnigma
+type: theme
+description: CE base theme
+package: UPD
+base theme: false
+core: 8.x
+libraries:
+  - ce/global-styling
+  - ce/global-scripts
+regions:
+  header: Header
+  content: Content
+  footer: Footer
+component-libraries:
+  templates:
+    paths:
+
+  principles:
+    paths:
+
+  basics:
+    paths:
+
+  components:
+    paths:
+
+  pages:
+    paths:
+
